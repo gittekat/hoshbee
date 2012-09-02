@@ -25,7 +25,8 @@ int main(int argv, char **args) {
 	return 0;
 
 	//QApplication app(argv, args);
-	//QtGUI gui = QtGUI();
+	//QtGUI gui;
+	//gui.show();
 
 	//return app.exec();
 }
