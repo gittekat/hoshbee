@@ -12,6 +12,9 @@ int main(int argv, char **args) {
 	        return 1;
 	}
 
+	Fisheye* fisheye = new Fisheye(img, img->width, img->height);
+	fisheye->deFisheye();
+	
 	// Display the image.
 	cvNamedWindow("Image:", CV_WINDOW_AUTOSIZE);
 	cvShowImage("Image:", img);
