@@ -1,5 +1,6 @@
 #include "QtGUI.h"
 
+
 QtGUI::QtGUI() {
 	openAction = new QAction(tr("&Open"), this);
 	saveAction = new QAction(tr("&Save"), this);
@@ -15,25 +16,34 @@ QtGUI::QtGUI() {
 	fileMenu->addSeparator();
 	fileMenu->addAction(exitAction);
 
-	textEdit = new QTextEdit;
-	setCentralWidget(textEdit);
+	//textEdit = new QTextEdit;
+	
 
-	setWindowTitle(tr("Notepad"));
+	imageWidget = new QtImageWidget(this);
+	img = cvLoadImage("..\\img\\fisheye_equisolid.png");
+	imageWidget->updatePixmap(img);
+	setCentralWidget(imageWidget);
+
+	setWindowTitle(tr("Playground"));
 }
 
 void QtGUI::open() {
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("Text Files (*.txt);;C++ Files (*.cpp *.h)"));
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("Images (*.png);;"));
+	QByteArray byteArray = fileName.toUtf8();
+	const char* cString = byteArray.constData();
+	img = cvLoadImage(cString);
+	imageWidget->updatePixmap(img);
 
-	if (fileName != "") {
-		QFile file(fileName);
-		if (!file.open(QIODevice::ReadOnly)) {
-			QMessageBox::critical(this, tr("Error"), tr("Could not open file"));
-			return;
-		}
-		QTextStream in(&file);
-		textEdit->setText(in.readAll());
-		file.close();
-	}
+	//if (fileName != "") {
+	//	QFile file(fileName);
+	//	if (!file.open(QIODevice::ReadOnly)) {
+	//		QMessageBox::critical(this, tr("Error"), tr("Could not open file"));
+	//		return;
+	//	}
+	//	QTextStream in(&file);
+	//	textEdit->setText(in.readAll());
+	//	file.close();
+	//}
 }
 
 void QtGUI::save() {

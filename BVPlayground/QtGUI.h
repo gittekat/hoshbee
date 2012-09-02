@@ -4,6 +4,8 @@
 #include <QApplication>
 #include <QTextEdit>
 #include <QtGui>
+#include <highgui.h>
+#include "QtImageWidget.h"
 
 class QtGUI : public QMainWindow {
 
@@ -20,10 +22,13 @@ public:
 		void quit();
 private:
 	QTextEdit *textEdit;
+	QtImageWidget *imageWidget;
 
 	QAction *openAction;
 	QAction *saveAction;
 	QAction *exitAction;
+
+	IplImage *img;
 
 	QMenu *fileMenu;
 };

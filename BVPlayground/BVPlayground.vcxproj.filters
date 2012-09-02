@@ -30,9 +30,18 @@
     <ClCompile Include="Fisheye.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="QtImageWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tmp\moc\moc_QtImageWidget.cpp">
+      <Filter>Generated Moc Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="QtGUI.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="QtImageWidget.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
