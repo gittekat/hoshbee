@@ -80,10 +80,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Fisheye.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="QtGUI.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Fisheye.h" />
     <ClInclude Include="QtGUI.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
