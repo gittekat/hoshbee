@@ -1,11 +1,10 @@
 #include <cv.h>
 #include <cxcore.h>
 #include <highgui.h>
-//#include "QtGUI.h"
+#include "QtGUI.h"
 #include "Fisheye.h"
 
-int main(int argv, char **args)
-{
+int main(int argv, char **args) {
 	// Open the file.
 	IplImage *img = cvLoadImage("..\\img\\fisheye_equisolid.png");
 	if (!img) {
@@ -26,8 +25,9 @@ int main(int argv, char **args)
 
 	return 0;
 
+	//QApplication app(argv, args);
 	//QtGUI gui;
-	//int returnCode = gui.show(argv, args);
+	//gui.show();
 
-	//return returnCode;
+	//return app.exec();
 }
