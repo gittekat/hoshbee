@@ -1,12 +1,12 @@
 #include <cv.h>
 #include <cxcore.h>
 #include <highgui.h>
-#include "QtGUI.h"
+//#include "QtGUI.h"
 
 int main(int argv, char **args)
 {
 	// Open the file.
-	IplImage *img = cvLoadImage("d:\\Stuff\\temp\\lange haare.jpg");
+	IplImage *img = cvLoadImage("..\\img\\fisheye_equisolid.png");
 	if (!img) {
 	        printf("Error: Couldn't open the image file.\n");
 	        return 1;
