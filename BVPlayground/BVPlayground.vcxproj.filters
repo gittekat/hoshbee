@@ -27,10 +27,18 @@
     <ClCompile Include="tmp\moc\moc_QtGUI.cpp">
       <Filter>Generated Moc Files</Filter>
     </ClCompile>
+    <ClCompile Include="Fisheye.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="QtGUI.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Fisheye.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
