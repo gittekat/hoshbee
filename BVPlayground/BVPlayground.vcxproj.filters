@@ -25,7 +25,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Fisheye.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\fisheye</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
