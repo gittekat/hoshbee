@@ -3,17 +3,17 @@
 QtGUI::QtGUI() {
 	openAction = new QAction(tr("&Open"), this);
 	saveAction = new QAction(tr("&Save"), this);
-	//exitAction = new QAction(tr("E&xit"), this);
+	exitAction = new QAction(tr("E&xit"), this);
 
 	connect(openAction, SIGNAL(triggered()), this, SLOT(open()));
 	connect(saveAction, SIGNAL(triggered()), this, SLOT(save()));
-	//connect(exitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
+	connect(exitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
 
 	fileMenu = menuBar()->addMenu(tr("&File"));
 	fileMenu->addAction(openAction);
 	fileMenu->addAction(saveAction);
 	fileMenu->addSeparator();
-	//fileMenu->addAction(exitAction);
+	fileMenu->addAction(exitAction);
 
 	textEdit = new QTextEdit;
 	setCentralWidget(textEdit);
@@ -50,4 +50,8 @@ void QtGUI::save() {
 			file.close();
 		}
 	}
+}
+
+void QtGUI::quit() {
+	exit(0);
 }

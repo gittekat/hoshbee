@@ -12,12 +12,12 @@ int main(int argv, char **args) {
 	//        return 1;
 	//}
 
-	//Fisheye* fisheye = new Fisheye(img, img->width, img->height);
-	//fisheye->deFisheye();
-	
 	//// Display the image.
 	//cvNamedWindow("Image:", CV_WINDOW_AUTOSIZE);
 	//cvShowImage("Image:", img);
+	//Fisheye* fisheye = new Fisheye(img, img->width, img->height);
+	//fisheye->deFisheye();
+	
 
 	//// Wait for the user to press a key in the GUI window.
 	//cvWaitKey(0);

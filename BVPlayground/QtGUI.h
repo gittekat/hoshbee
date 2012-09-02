@@ -17,7 +17,7 @@ public:
 	private slots:
 		void open();
 		void save();
-		//void quit();
+		void quit();
 private:
 	QTextEdit *textEdit;
 
