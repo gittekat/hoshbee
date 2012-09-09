@@ -7,6 +7,8 @@
 #include <highgui.h>
 #include "QtImageWidget.h"
 
+#include "Fisheye.h"
+
 class QtGUI : public QMainWindow {
 
 	Q_OBJECT
@@ -20,17 +22,23 @@ public:
 		void open();
 		void save();
 		void quit();
+		void defisheye();
 private:
 	QTextEdit *textEdit;
 	QtImageWidget *imageWidget;
 
+	// file menu
 	QAction *openAction;
 	QAction *saveAction;
 	QAction *exitAction;
 
+	// fisheye menu
+	QAction *defisheyeAction;
+
 	IplImage *img;
 
 	QMenu *fileMenu;
+	QMenu *fisheyeMenu;
 };
 
 #endif // !QtGUI_H

@@ -5,7 +5,7 @@ QtGUI::QtGUI() {
 	openAction = new QAction(tr("&Open"), this);
 	saveAction = new QAction(tr("&Save"), this);
 	exitAction = new QAction(tr("E&xit"), this);
-
+	
 	connect(openAction, SIGNAL(triggered()), this, SLOT(open()));
 	connect(saveAction, SIGNAL(triggered()), this, SLOT(save()));
 	connect(exitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
@@ -15,6 +15,13 @@ QtGUI::QtGUI() {
 	fileMenu->addAction(saveAction);
 	fileMenu->addSeparator();
 	fileMenu->addAction(exitAction);
+
+	defisheyeAction = new QAction(tr("&Defisheye"), this);
+
+	connect(defisheyeAction, SIGNAL(triggered()), this, SLOT(defisheye()));
+
+	fisheyeMenu = menuBar()->addMenu(tr("&Fisheye")); 
+	fisheyeMenu->addAction(defisheyeAction);
 
 	//textEdit = new QTextEdit;
 	
@@ -64,4 +71,18 @@ void QtGUI::save() {
 
 void QtGUI::quit() {
 	exit(0);
+}
+
+void QtGUI::defisheye() {
+	if (!img) {
+		printf("Error: Couldn't open the image file.\n");
+		return;
+	}
+
+	double angle = 180.0;
+	double tmp = (angle / 360.0) * M_PI; // conversion DEG to RAD of half the angle of view
+	double focal_length = 1.0 / (2 * sin(tmp/2));
+
+	Fisheye* fisheye = new Fisheye(img, focal_length, 500.0, img->width/2, img->height/2);
+	fisheye->deFisheye2();	
 }
