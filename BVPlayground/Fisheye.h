@@ -27,6 +27,7 @@ private:
 	inline double rad2Deg(const double rad);
 	inline double deg2Rad(const double deg);
 
+	CvScalar getSubPixel(IplImage* src, double x, double y);
 	IplImage* getPolarCoordImage(IplImage* src);
 
 	inline CvPoint3D64d rotateTheta(double theta);

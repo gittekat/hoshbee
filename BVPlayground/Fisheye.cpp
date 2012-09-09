@@ -223,24 +223,19 @@ void Fisheye::deFisheye3() {
 
 			// translate to image coordinates
 			//CvPoint imgCoord = getTranslatedPos((int)x, (int)y, mImage->width/2, mImage->height/2);
-			int x2 = x + mImage->width/2;
-			int y2 = y + mImage->height/2;
-			CvPoint imgCoord = {x2, y2};
-			
-			if (imgCoord.x < 0 || imgCoord.x > mImage->width || imgCoord.y < 0 || imgCoord.y > mImage->height) {
-				continue;
-			}
+			double x2 = x + (double)mImage->width/2.0;
+			double y2 = y + (double)mImage->height/2.0;
 
-			uchar* value = &((uchar*)(mImage->imageData + mImage->widthStep*imgCoord.x))[imgCoord.y*3];
+			CvScalar color = getSubPixel(mImage, x2, y2);
 
 			uchar* destPixel = &((uchar*)(dst->imageData + dst->widthStep*i))[j*3];
-			destPixel[0] = value[0];
-			destPixel[1] = value[1];
-			destPixel[2] = value[2];
+			destPixel[0] = color.val[0];
+			destPixel[1] = color.val[1];
+			destPixel[2] = color.val[2];
 
 		}
 	}
-
+	
 	cvNamedWindow("Image:", CV_WINDOW_AUTOSIZE);
 	cvShowImage("Image:", dst);
 
@@ -252,6 +247,36 @@ void Fisheye::deFisheye3() {
 	// Free the resources.
 	cvDestroyWindow("Image:");
 	cvReleaseImage(&dst);
+}
+
+CvScalar Fisheye::getSubPixel(IplImage* src, double x, double y) {
+	int x1 = floor(x);
+	int x2 = ceil(x);
+	int y1 = floor(y);
+	int y2 = ceil(y);
+
+	uchar* Q11 = &((uchar*)(mImage->imageData + src->widthStep*x1))[y1*3];
+	uchar* Q12 = &((uchar*)(mImage->imageData + src->widthStep*x1))[y2*3];
+	uchar* Q21 = &((uchar*)(mImage->imageData + src->widthStep*x2))[y1*3];
+	uchar* Q22 = &((uchar*)(mImage->imageData + src->widthStep*x2))[y2*3];
+
+	double b =	Q11[0] * (x2-x) * (y2-y) +
+				Q21[0] * (x-x1) * (y2-y) +
+				Q12[0] * (x2-x) * (y-y1) +
+				Q22[0] * (x-x1) * (y-y1);
+
+	double g =	Q11[1] * (x2-x) * (y2-y) +
+				Q21[1] * (x-x1) * (y2-y) +
+				Q12[1] * (x2-x) * (y-y1) +
+				Q22[1] * (x-x1) * (y-y1);
+	
+	double r =	Q11[2] * (x2-x) * (y2-y) +
+				Q21[2] * (x-x1) * (y2-y) +
+				Q12[2] * (x2-x) * (y-y1) +
+				Q22[2] * (x-x1) * (y-y1);
+
+	CvScalar color = {b, g, r};
+	return color;
 }
 
 IplImage* Fisheye::getPolarCoordImage(IplImage* src) {
