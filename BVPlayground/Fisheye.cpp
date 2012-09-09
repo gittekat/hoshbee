@@ -29,7 +29,7 @@ void Fisheye::deFisheye() {
 
 	for (int i=0; i<mImage->width; ++i) {
 		for (int j=0; j<mImage->height; ++j) {
-			CvPoint p = getTranslatedPos(i, j);
+			CvPoint p = getTranslatedPos(i, j, mCenterX, mCenterY);
 
 			double r = getRadius(p.x, p.y);
 			r = r / mRadius;
@@ -96,24 +96,25 @@ void Fisheye::deFisheye() {
 	cout << getScaledPos(500) << endl;
 	cout << getScaledPos(mRadius) << " = " << 2.0 * mFocalLength << endl;
 
-	CvPoint test = getTranslatedPos(100, 100);
+	CvPoint test = getTranslatedPos(100, 100, mCenterX, mCenterY);
 	cout << test.x << " x " << test.y << endl;
-	test = getTranslatedPos(0, 0);
+	test = getTranslatedPos(0, 0, mCenterX, mCenterY);
 	cout << test.x << " x " << test.y << endl;
-	test = getTranslatedPos(500, 500);
+	test = getTranslatedPos(500, 500, mCenterX, mCenterY);
 	cout << test.x << " x " << test.y << endl;
 }
 
 void Fisheye::deFisheye2() {
-	int texSize = 500;
-	IplImage* dst = cvCreateImage(cvSize(texSize, texSize), 8, 3);
+	int dstSizeX = 500;
+	int dstSizeY = 500;
+	IplImage* dst = cvCreateImage(cvSize(dstSizeX, dstSizeY), 8, 3);
 
 	// distance of image plane
 	double dist = 300.0;
 	
 	for (int i=0; i<mImage->width; ++i) {
 		for (int j=0; j<mImage->height; ++j) {
-			CvPoint p = getTranslatedPos(i, j);
+			CvPoint p = getTranslatedPos(i, j, mCenterX, mCenterY);
 
 			double r = getRadius(p.x, p.y);
 			r = r / mRadius;
@@ -134,27 +135,17 @@ void Fisheye::deFisheye2() {
 				alpha = 2.0 * M_PI;
 			}
 			
-			CvPoint pt = {i,j};
-			
-			/*int x = i - mCenterX;
-			int y = j - mCenterY;*/
-
-			uchar* value = &((uchar*)(mImage->imageData + mImage->widthStep*pt.y))[pt.x*3];
-
 			CvPoint3D64d v = rotateTheta(theta);
-			//cout << v.x << " " << v.y << " " << v.z << endl;
-
 			CvPoint3D64d v2 = rotateAlpha(v, alpha);
-			//cout << v2.x << " " << v2.y << " " << v2.z << endl;
 			
 			double t = dist / -v2.z;
 			CvPoint3D64d v3 = multiply(v2, t);
-			//cout << v3.x << " " << v3.y << " " << v3.z << endl;
 
 			v3.x += 250.0;
 			v3.y += 250.0;
 
-			if (v3.x >= 0 && v3.x < 500 && v3.y >= 0 && v3.y < 500)  {
+			uchar* value = &((uchar*)(mImage->imageData + mImage->widthStep*i))[j*3];
+			if (v3.x >= 0 && v3.x < dstSizeX && v3.y >= 0 && v3.y < dstSizeY)  {
 				uchar* destPixel = &((uchar*)(dst->imageData + dst->widthStep*(int)v3.x))[(int)v3.y*3];
 				destPixel[0] = value[0];
 				destPixel[1] = value[1];
@@ -163,7 +154,7 @@ void Fisheye::deFisheye2() {
 		}
 	}
 
-	double angle = 45.0 * M_PI / 180.0;
+	/*double angle = 45.0 * M_PI / 180.0;
 	CvPoint3D64d v = rotateTheta(angle);
 	cout << v.x << " " << v.y << " " << v.z << endl;
 
@@ -173,7 +164,7 @@ void Fisheye::deFisheye2() {
 	double t = dist / -v2.z;
 
 	CvPoint3D64d v3 = multiply(v2, t);
-	cout << v3.x << " " << v3.y << " " << v3.z << endl;
+	cout << v3.x << " " << v3.y << " " << v3.z << endl;*/
 
 	cvNamedWindow("Image:", CV_WINDOW_AUTOSIZE);
 	cvShowImage("Image:", dst);
@@ -188,6 +179,102 @@ void Fisheye::deFisheye2() {
 	cvReleaseImage(&dst);
 }
 
+void Fisheye::deFisheye3() {
+	int dstSizeX = 500;
+	int dstSizeY = 500;
+	IplImage* dst = cvCreateImage(cvSize(dstSizeX, dstSizeY), 8, 3);
+
+	//IplImage *polarImage = getPolarCoordImage(mImage);
+
+	// distance of image plane
+	double dist = 300.0;
+
+	for (int i=0; i<dst->width; ++i) {
+		for (int j=0; j<dst->height; ++j) {
+			// translate pos
+			CvPoint pt = getTranslatedPos(i, j, dst->width/2, dst->height/2);
+			
+			double perspectiveRadius = getRadius(pt.x, pt.y);
+			double theta = atan(perspectiveRadius/300.0); // perspective focal length?
+
+			double fisheyeRadius = getFisheyeRadius(mFocalLength, theta);
+			double fisheyeRadius_deg = rad2Deg(fisheyeRadius);
+			double theta_deg = rad2Deg(theta);
+
+			double alpha = getAngle(pt.x, pt.y);
+			double alpha_deg = rad2Deg(alpha);
+				
+			if (alpha < 0.0) {
+				alpha = alpha + 2.0 * M_PI;
+			}
+			if (alpha > 2.0 * M_PI) {
+				alpha = 2.0 * M_PI;
+			}
+			alpha_deg = rad2Deg(alpha);
+
+			double x = fisheyeRadius * cos(alpha);
+			double y = fisheyeRadius * sin(alpha);
+
+			// scale to fisheye image size
+			x *= mImage->width/2;
+			y *= mImage->height/2;
+
+			// TODO get sub pixel value!!!
+
+			// translate to image coordinates
+			//CvPoint imgCoord = getTranslatedPos((int)x, (int)y, mImage->width/2, mImage->height/2);
+			int x2 = x + mImage->width/2;
+			int y2 = y + mImage->height/2;
+			CvPoint imgCoord = {x2, y2};
+			
+			if (imgCoord.x < 0 || imgCoord.x > mImage->width || imgCoord.y < 0 || imgCoord.y > mImage->height) {
+				continue;
+			}
+
+			uchar* value = &((uchar*)(mImage->imageData + mImage->widthStep*imgCoord.x))[imgCoord.y*3];
+
+			uchar* destPixel = &((uchar*)(dst->imageData + dst->widthStep*i))[j*3];
+			destPixel[0] = value[0];
+			destPixel[1] = value[1];
+			destPixel[2] = value[2];
+
+		}
+	}
+
+	cvNamedWindow("Image:", CV_WINDOW_AUTOSIZE);
+	cvShowImage("Image:", dst);
+
+	// Wait for the user to press a key in the GUI window.
+	cvWaitKey(0);
+
+	cvSaveImage("reverse.png", dst);
+
+	// Free the resources.
+	cvDestroyWindow("Image:");
+	cvReleaseImage(&dst);
+}
+
+IplImage* Fisheye::getPolarCoordImage(IplImage* src) {
+	
+	IplImage* dst = cvCreateImage( cvSize(256,256), 8, 3 );
+	IplImage* src2 = cvCreateImage( cvGetSize(src), 8, 3 );
+	
+	cvLogPolar( src, dst, cvPoint2D32f(src->width/2,src->height/2), 40,
+		CV_INTER_LINEAR+CV_WARP_FILL_OUTLIERS );
+	cvLogPolar( dst, src2, cvPoint2D32f(src->width/2,src->height/2), 40,
+		CV_INTER_LINEAR+CV_WARP_FILL_OUTLIERS+CV_WARP_INVERSE_MAP );
+	
+	cvNamedWindow( "log-polar", 1 );
+	cvShowImage( "log-polar", dst );
+	cvNamedWindow( "inverse log-polar", 1 );
+	cvShowImage( "inverse log-polar", src2 );
+	cvWaitKey();
+
+	cvReleaseImage(&src2);
+
+	return dst;
+}
+
 inline double Fisheye::getAngle(int x, int y) {
 	return atan2((double)x, (double)y);
 }
@@ -197,6 +284,10 @@ inline double Fisheye::getDefishAngle(const double radius) {
 	double angle = 2.0 * asin(tmp);
 
 	return angle;
+}
+
+inline double Fisheye::getFisheyeRadius(const double focalLength, const double theta) {
+	return (2.0 * focalLength * sin (theta/2.0));
 }
 
 inline double Fisheye::getRadius(double x, double y) {
@@ -210,8 +301,8 @@ inline double Fisheye::deg2Rad(const double deg) {
 	return (deg * M_PI) / 180.0;
 }
 
-inline CvPoint Fisheye::getTranslatedPos(const int x, const int y) {
-	CvPoint res = {x - mCenterX, mCenterY - y};
+inline CvPoint Fisheye::getTranslatedPos(const int x, const int y, const int centerX, const int centerY) {
+	CvPoint res = {x - centerX, centerY - y};
 	return res;
 }
 

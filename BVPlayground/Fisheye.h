@@ -15,15 +15,19 @@ public:
 
 	void deFisheye();
 	void deFisheye2();
+	void deFisheye3();
 
 private:
 	inline double getAngle(const int x, const int y);
 	inline double getDefishAngle(const double radius);
+	inline double getFisheyeRadius(const double focalLength, const double theta);
 	inline double getRadius(double x, double y);
 	inline double getScaledPos(int value);
-	inline CvPoint getTranslatedPos(const int x, const int y);
+	inline CvPoint getTranslatedPos(const int x, const int y, const int centerX, const int centerY);
 	inline double rad2Deg(const double rad);
 	inline double deg2Rad(const double deg);
+
+	IplImage* getPolarCoordImage(IplImage* src);
 
 	inline CvPoint3D64d rotateTheta(double theta);
 	inline CvPoint3D64d rotateAlpha(CvPoint3D64d v, double alpha);

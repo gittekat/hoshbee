@@ -84,5 +84,5 @@ void QtGUI::defisheye() {
 	double focal_length = 1.0 / (2 * sin(tmp/2));
 
 	Fisheye* fisheye = new Fisheye(img, focal_length, 500.0, img->width/2, img->height/2);
-	fisheye->deFisheye2();	
+	fisheye->deFisheye3();	
 }
